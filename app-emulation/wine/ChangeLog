@@ -2,6 +2,17 @@
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+  07 Apr 2015; <adam@gentoo.org> +wine-1.6.2.ebuild, +wine-1.7.0.ebuild,
+  +wine-1.7.3.ebuild, +wine-1.7.4.ebuild, +wine-1.7.8.ebuild,
+  +wine-1.7.9.ebuild, +wine-1.7.10.ebuild, +wine-1.7.11.ebuild,
+  +wine-1.7.12.ebuild, +wine-1.7.13.ebuild, +wine-1.7.14.ebuild,
+  +wine-1.7.15.ebuild, +wine-1.7.16.ebuild, +wine-1.7.17.ebuild,
+  +wine-1.7.18.ebuild, +wine-1.7.19-r1.ebuild, +wine-1.7.20.ebuild,
+  +wine-1.7.21.ebuild, +wine-1.7.22.ebuild, +wine-1.7.28.ebuild,
+  +wine-1.7.29.ebuild, +files/wine-1.5.17-osmesa-check.patch,
+  +files/wine-1.7.2-osmesa-check.patch:
+  Import from Gentoo's tree to perform overhaul
+
 *wine-1.7.40 (06 Apr 2015)
 
   06 Apr 2015; NP-Hardass <np.hardass@gmail.com> +wine-1.7.40.ebuild:
