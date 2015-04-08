@@ -296,6 +296,7 @@ src_prepare() {
 		"${FILESDIR}"/${PN}-1.4_rc2-multilib-portage.patch #395615
 		"${FILESDIR}"/${PN}-1.7.2-osmesa-check.patch #429386
 		"${FILESDIR}"/${PN}-1.6-memset-O3.patch #480508
+		"${FILESDIR}"/${PN}-1.7.0-freetype-header-location.patch #539830
 		"../${PULSE_PATCHES}"/*.patch #421365
 	)
 
