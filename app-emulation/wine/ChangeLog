@@ -2,6 +2,9 @@
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+  30 Apr 2015; NP-Hardass <np.hardass@gmail.com> wine-1.7.0-r1.ebuild:
+  Fix minnor typo in 1.7.0-r1
+
 *wine-1.6.2-r1 (30 Apr 2015)
 *wine-1.7.0-r1 (30 Apr 2015)
 *wine-1.7.10-r1 (30 Apr 2015)
