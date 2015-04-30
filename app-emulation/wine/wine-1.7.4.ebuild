@@ -1,6 +1,6 @@
 # Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/app-emulation/wine/wine-1.7.4.ebuild,v 1.10 2015/01/01 21:01:23 ryao Exp $
+# $Header: $
 
 EAPI="5"
 
@@ -8,11 +8,12 @@ AUTOTOOLS_AUTORECONF=1
 PLOCALES="ar bg ca cs da de el en en_US eo es fa fi fr he hi hr hu it ja ko lt ml nb_NO nl or pa pl pt_BR pt_PT rm ro ru sk sl sr_RS@cyrillic sr_RS@latin sv te th tr uk wa zh_CN zh_TW"
 PLOCALE_BACKUP="en"
 
-inherit autotools-multilib eutils fdo-mime flag-o-matic gnome2-utils l10n multilib pax-utils toolchain-funcs virtualx
+inherit autotools-utils eutils fdo-mime flag-o-matic gnome2-utils l10n multilib multilib-minimal pax-utils toolchain-funcs virtualx
 
 if [[ ${PV} == "9999" ]] ; then
 	EGIT_REPO_URI="git://source.winehq.org/git/wine.git"
-	inherit git-2
+	EGIT_BRANCH="master"
+	inherit git-r3
 	SRC_URI=""
 	#KEYWORDS=""
 else
@@ -25,7 +26,7 @@ fi
 GV="2.24"
 MV="0.0.8"
 PULSE_PATCHES="winepulse-patches-1.7.4"
-WINE_GENTOO="wine-gentoo-2013.06.24"
+WINE_GENTOO="wine-gentoo-2015.03.07"
 DESCRIPTION="Free implementation of Windows(tm) on Unix"
 HOMEPAGE="http://www.winehq.org/"
 SRC_URI="${SRC_URI}
@@ -34,12 +35,12 @@ SRC_URI="${SRC_URI}
 		abi_x86_64? ( mirror://sourceforge/${PN}/Wine%20Gecko/${GV}/wine_gecko-${GV}-x86_64.msi )
 	)
 	mono? ( mirror://sourceforge/${PN}/Wine%20Mono/${MV}/wine-mono-${MV}.msi )
-	http://dev.gentoo.org/~tetromino/distfiles/${PN}/${PULSE_PATCHES}.tar.bz2
+	pulseaudio? ( http://dev.gentoo.org/~tetromino/distfiles/${PN}/${PULSE_PATCHES}.tar.bz2 )
 	http://dev.gentoo.org/~tetromino/distfiles/${PN}/${WINE_GENTOO}.tar.bz2"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-IUSE="+abi_x86_32 +abi_x86_64 +alsa capi cups custom-cflags dos elibc_glibc +fontconfig +gecko gphoto2 gsm gstreamer +jpeg lcms ldap +mono mp3 ncurses nls odbc openal opencl +opengl osmesa oss +perl +png +prelink pulseaudio +realtime +run-exes samba scanner selinux +ssl test +threads +truetype +udisks v4l +X xcomposite xinerama +xml"
+IUSE="+abi_x86_32 +abi_x86_64 +alsa capi cups custom-cflags dos elibc_glibc +fontconfig +gecko gphoto2 gsm gstreamer +jpeg +lcms ldap +mono mp3 ncurses nls odbc openal opencl +opengl osmesa oss +perl +png +prelink pulseaudio +realtime +run-exes samba scanner selinux +ssl test +threads +truetype +udisks v4l +X +xcomposite xinerama +xml"
 REQUIRED_USE="|| ( abi_x86_32 abi_x86_64 )
 	test? ( abi_x86_32 )
 	elibc_glibc? ( threads )
@@ -167,12 +168,12 @@ pkg_setup() {
 
 src_unpack() {
 	if [[ ${PV} == "9999" ]] ; then
-		git-2_src_unpack
+		git-r3_src_unpack
 	else
 		unpack ${MY_P}.tar.bz2
 	fi
 
-	unpack "${PULSE_PATCHES}.tar.bz2"
+	use pulseaudio && unpack "${PULSE_PATCHES}.tar.bz2"
 	unpack "${WINE_GENTOO}.tar.bz2"
 
 	l10n_find_plocales_changes "${S}/po" "" ".po"
@@ -187,11 +188,14 @@ src_prepare() {
 		"${FILESDIR}"/${PN}-1.6-memset-O3.patch #480508
 		"${FILESDIR}"/${PN}-1.7.0-freetype-header-location.patch #539830
 		"${FILESDIR}"/${PN}-gcc-4.9-null-pointer.patch #543446
+	)
+	use pulseaudio && PATCHES+=(
 		"../${PULSE_PATCHES}"/*.patch #421365
 	)
 
 	autotools-utils_src_prepare
 
+	# Modification of the server protocol requires regenerating the server requests
 	if [[ "$(md5sum server/protocol.def)" != "${md5}" ]]; then
 		einfo "server/protocol.def was patched; running tools/make_requests"
 		tools/make_requests || die #432348
@@ -207,28 +211,15 @@ src_prepare() {
 	l10n_get_locales > po/LINGUAS # otherwise wine doesn't respect LINGUAS
 }
 
-do_configure() {
-	local myeconfargs=( "${myeconfargs[@]}" )
-
-	if use amd64; then
-		if [[ ${ABI} == amd64 ]]; then
-			myeconfargs+=( --enable-win64 )
-		else
-			myeconfargs+=( --disable-win64 )
-		fi
-
-		# Note: using --with-wine64 results in problems with multilib.eclass
-		# CC/LD hackery. We're using separate tools instead.
-	fi
-
-	autotools-utils_src_configure
-}
-
 src_configure() {
 	export LDCONFIG=/bin/true
 	use custom-cflags || strip-flags
 
-	local myeconfargs=( # common
+	multilib-minimal_src_configure
+}
+
+multilib_src_configure() {
+	local myconf=(
 		--sysconfdir=/etc/wine
 		$(use_with alsa)
 		$(use_with capi)
@@ -254,7 +245,6 @@ src_configure() {
 		$(use_with osmesa)
 		$(use_with oss)
 		$(use_with png)
-		$(use_with pulseaudio pulse)
 		$(use_with threads pthread)
 		$(use_with scanner sane)
 		$(use_enable test tests)
@@ -267,42 +257,54 @@ src_configure() {
 		$(use_with xml xslt)
 	)
 
-	if use amd64 && use abi_x86_32; then
-		# Avoid crossdev's i686-pc-linux-gnu-pkg-config if building wine32 on amd64; #472038
-		# set AR and RANLIB to make QA scripts happy; #483342
-		tc-export PKG_CONFIG AR RANLIB
+	use pulseaudio && myconf+=( --with-pulse )
+
+	local PKG_CONFIG AR RANLIB
+	# Avoid crossdev's i686-pc-linux-gnu-pkg-config if building wine32 on amd64; #472038
+	# set AR and RANLIB to make QA scripts happy; #483342
+	tc-export PKG_CONFIG AR RANLIB
+
+	if use amd64; then
+		if [[ ${ABI} == amd64 ]]; then
+			myconf+=( --enable-win64 )
+		else
+			myconf+=( --disable-win64 )
+		fi
+
+		# Note: using --with-wine64 results in problems with multilib.eclass
+		# CC/LD hackery. We're using separate tools instead.
 	fi
 
-	multilib_parallel_foreach_abi do_configure
+	ECONF_SOURCE=${S} \
+	econf "${myconf[@]}"
+	emake depend
 }
 
-src_compile() {
-	autotools-multilib_src_compile depend
-	autotools-multilib_src_compile all
-}
-
-src_test() {
-	if [[ $(id -u) == 0 ]]; then
-		ewarn "Skipping tests since they cannot be run under the root user."
-		ewarn "To run the test ${PN} suite, add userpriv to FEATURES in make.conf"
-		return
-	fi
-
+multilib_src_test() {
 	# FIXME: win32-only; wine64 tests fail with "could not find the Wine loader"
-	multilib_toolchain_setup x86
-	local BUILD_DIR="${S}-${ABI}"
-	cd "${BUILD_DIR}" || die
-	WINEPREFIX="${T}/.wine-${ABI}" Xemake test
+	if [[ ${ABI} == x86 ]]; then
+		if [[ $(id -u) == 0 ]]; then
+			ewarn "Skipping tests since they cannot be run under the root user."
+			ewarn "To run the test ${PN} suite, add userpriv to FEATURES in make.conf"
+			return
+		fi
+
+		WINEPREFIX="${T}/.wine-${ABI}" \
+		Xemake test
+	fi
 }
 
-src_install() {
+multilib_src_install_all() {
 	local DOCS=( ANNOUNCE AUTHORS README )
+	local l
 	add_locale_docs() {
 		local locale_doc="documentation/README.$1"
-		[[ ! -e ${locale_doc} ]] || DOCS=( "${DOCS[@]}" ${locale_doc} )
+		[[ ! -e ${locale_doc} ]] || DOCS+=( ${locale_doc} )
 	}
 	l10n_for_each_locale_do add_locale_docs
-	autotools-multilib_src_install
+
+	einstalldocs
+	prune_libtool_files --all
 
 	emake -C "../${WINE_GENTOO}" install DESTDIR="${D}" EPREFIX="${EPREFIX}"
 	if use gecko ; then
@@ -314,7 +316,7 @@ src_install() {
 		insinto /usr/share/wine/mono
 		doins "${DISTDIR}"/wine-mono-${MV}.msi
 	fi
-	if ! use perl ; then
+	if ! use perl ; then # winedump calls function_grep.pl, and winemaker is a perl script
 		rm "${D}"usr/bin/{wine{dump,maker},function_grep.pl} "${D}"usr/share/man/man1/wine{dump,maker}.1 || die
 	fi
 
