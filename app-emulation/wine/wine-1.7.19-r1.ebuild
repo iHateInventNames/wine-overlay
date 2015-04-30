@@ -226,6 +226,7 @@ src_prepare() {
 		ewarn "unless you can reproduce them with USE=-staging"
 
 		PATCHES+=(
+			"${FILESDIR}/wine-1.7.19-makefile-race-cond.patch"
 			"${STAGING_DIR}/patches"/*/*.patch #507950
 			"${STAGING_DIR}/patches/patch-list.patch"
 		)
