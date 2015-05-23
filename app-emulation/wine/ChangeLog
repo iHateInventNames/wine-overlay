@@ -2,6 +2,11 @@
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+*wine-1.7.43 (23 May 2015)
+
+  23 May 2015; NP-Hardass <np.hardass@gmail.com> +wine-1.7.43.ebuild:
+  Version bump to 1.7.43
+
 *wine-1.7.42 (03 May 2015)
 
   03 May 2015; NP-Hardass <np.hardass@gmail.com> +wine-1.7.42.ebuild:
