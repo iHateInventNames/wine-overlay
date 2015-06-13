@@ -1,3 +1,10 @@
+*winetricks-20150416 (13 Jun 2015)
+
+  13 Jun 2015; NP-Hardass <np.hardass@gmail.com> +winetricks-20150416.ebuild,
+  -winetricks-20141130.ebuild, -winetricks-20150316.ebuild,
+  winetricks-99999999.ebuild:
+  Version bump and change deps for pkg mv for kdialog
+
 *winetricks-20150316 (16 Mar 2015)
 
   16 Mar 2015; NP-Hardass <np.hardass@gmail.com> +winetricks-20150316.ebuild,

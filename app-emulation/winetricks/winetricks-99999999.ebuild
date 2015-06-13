@@ -34,7 +34,7 @@ RDEPEND="app-arch/cabextract
 	net-misc/wget
 	x11-misc/xdg-utils
 	gtk? ( gnome-extra/zenity )
-	kde? ( kde-base/kdialog )
+	kde? ( kde-apps/kdialog )
 	rar? ( app-arch/unrar )"
 
 # Uses non-standard "Wine" category, which is provided by app-emulation/wine; #451552
