@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<herd>proxy-maintainers</herd>
+	<maintainer>
+		<email>np.hardass@gmail.com</email>
+		<name>NP-Hardass</name>
+		<description>Proxy maintainer. Assign bugs to him</description>
+	</maintainer>
+	<use>
+			<flag name="system-wine">Use system wine instead of bundled wine.</flag>
+	</use>
+</pkgmetadata>
+
