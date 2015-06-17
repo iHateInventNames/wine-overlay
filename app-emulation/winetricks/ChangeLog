@@ -1,3 +1,7 @@
+  17 Jun 2015; NP-Hardass <np.hardass@gmail.com> winetricks-20150416.ebuild,
+  winetricks-99999999.ebuild:
+  Fix zip/tar issue with winetricks, and regen manifest
+
 *winetricks-20150416 (13 Jun 2015)
 
   13 Jun 2015; NP-Hardass <np.hardass@gmail.com> +winetricks-20150416.ebuild,
