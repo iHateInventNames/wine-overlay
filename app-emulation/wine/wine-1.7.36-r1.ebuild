@@ -11,7 +11,7 @@ PLOCALE_BACKUP="en"
 inherit autotools-utils eutils fdo-mime flag-o-matic gnome2-utils l10n multilib multilib-minimal pax-utils toolchain-funcs virtualx
 
 if [[ ${PV} == "9999" ]] ; then
-	EGIT_REPO_URI="git://source.winehq.org/git/wine.git"
+	EGIT_REPO_URI="git://source.winehq.org/git/wine.git http://source.winehq.org/git/wine.git"
 	EGIT_BRANCH="master"
 	inherit git-r3
 	SRC_URI=""
@@ -160,6 +160,13 @@ usr/share/applications/wine-winecfg.desktop"
 
 wine_build_environment_check() {
 	[[ ${MERGE_TYPE} = "binary" ]] && return 0
+
+	# bug #549768
+	if [[ $(gcc-major-version) = 5 ]]; then
+		eerror "You need gcc-4.x to build wine; see https://bugs.gentoo.org/549768"
+		eerror
+		return 1
+	fi
 
 	if use abi_x86_64 && [[ $(( $(gcc-major-version) * 100 + $(gcc-minor-version) )) -lt 404 ]]; then
 		eerror "You need gcc-4.4+ to build 64-bit wine"
