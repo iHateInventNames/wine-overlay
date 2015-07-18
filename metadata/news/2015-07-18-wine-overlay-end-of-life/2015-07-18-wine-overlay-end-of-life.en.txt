@@ -1,0 +1,24 @@
+Title: Branch End of Life
+Author: NP-Hardass <NP-Hardass@gentoo.org>
+Content-Type: text/plain
+Posted: 2015-07-18
+Revision: 1
+News-Item-Format: 1.0
+
+Thank you for faithfully using wine-overlay!
+
+At this point, I have become a Gentoo developer and so there is no delay from
+me waiting for a Gentoo developer to commit for me.  As such, the primary
+purpose of this branch is no longer necessary.  As all of the branches except
+for wine-a-holics (which is now a separate overlay) have been deprecated,
+there is no reason to keep the overlay around.
+
+As such, if you want to use plain ole wine, you should switch back to using
+the versions in Gentoo's repo (which still come from me).  If you are
+interested in the additional experimental features of slotting and Ixit's D3D9
+state tracker, please switch to the wine-a-holics overlay.  
+
+Thanks for being a supporter all this time.
+
+For more information, if you have questions, or if you'd like help, don't 
+hesitate to stop by the #gentoo-wine channel on Freenode's IRC network.
